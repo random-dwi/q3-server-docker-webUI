@@ -7,18 +7,27 @@ services:
     ports:
      - 27960:27960/udp
     volumes:
-     - ./server.cfg:/home/ioq3srv/ioquake3/osp/server.cfg
-     - ./logs/games.log:/home/ioq3srv/.q3a/osp/games.log
+     - ./autoexec.cfg:/home/ioq3srv/ioquake3/baseq3/autoexec.cfg
+     - ./server-baseq3.cfg:/home/ioq3srv/ioquake3/baseq3/server-baseq3.cfg
+     - log-volume:/home/ioq3srv/.q3a/baseq3/logs
 
   ng-quake3-be:
     environment:
        - Q3SERV_HOST:quake3
+       - Q3LOG_FILE:logs/server.log
        
     build: ./ng-quake3-be/
     restart: always
+    ports:
+     - 9009:9009
+    volumes:
+     - log-volume:/var/q3-server-docker-rest-api/logs
 
   ng-quake3-fe:
     restart: always
     build: ./ng-quake3-fe/
     ports:
      - 8080:8080
+
+volumes:
+     log-volume:
