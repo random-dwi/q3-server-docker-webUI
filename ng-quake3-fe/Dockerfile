@@ -4,7 +4,7 @@
 FROM node:10-alpine as builder
 
 RUN apk --no-cache add git && \
-    git clone https://github.com/kalik1/q3-server-docker-webUI-angular ./ng-app
+    git clone https://github.com/random-dwi/q3-server-docker-webUI-angular ./ng-app
 
 
 WORKDIR /ng-app
