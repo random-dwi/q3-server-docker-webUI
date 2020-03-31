@@ -23,7 +23,9 @@ FROM alpine:latest
 RUN adduser ioq3srv -D
 COPY --from=builder /root/ioquake3 /home/ioq3srv/ioquake3
 COPY ./build/pak0.pk3 /home/ioq3srv/ioquake3/baseq3/pak0.pk3
+COPY ./map-download/maps/*.pk3 /home/ioq3srv/ioquake3/baseq3/
+
 USER ioq3srv
 EXPOSE 27960/udp
 ENTRYPOINT ["/home/ioq3srv/ioquake3/ioq3ded.x86_64"]
-CMD ["+map", "q3dm17", "+exec", "server.cfg", "+set", "fs_game", "osp"]
+CMD ["+map", "q3dm17", "+exec", "server.cfg", "+exec", "levels.cfg"]

@@ -7,8 +7,9 @@ services:
     ports:
      - 27960:27960/udp
     volumes:
-     - ./server.cfg:/home/ioq3srv/ioquake3/osp/server.cfg
-     - ./logs/games.log:/home/ioq3srv/.q3a/osp/games.log
+     - ./server.cfg:/home/ioq3srv/ioquake3/baseq3/server.cfg
+     - ./levels.cfg:/home/ioq3srv/ioquake3/baseq3/levels.cfg
+    command: ["+exec", "server.cfg", "+exec", "levels.cfg"]
 
   ng-quake3-be:
     environment:
@@ -16,9 +17,19 @@ services:
        
     build: ./ng-quake3-be/
     restart: always
+    volumes:
+      - ./all_maps.json:/var/q3-server-docker-rest-api/lib/api/maps/maps.json
+    ports:
+      - 9009:9009
 
   ng-quake3-fe:
     restart: always
     build: ./ng-quake3-fe/
     ports:
      - 8080:8080
+
+  map-download:
+    restart: always
+    build: ./map-download
+    ports:
+      - 9090:9090
