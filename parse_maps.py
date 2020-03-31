@@ -34,47 +34,55 @@ if __name__ == '__main__':
 
     custom_maps = []
 
-    for f in pk3files:
-        print("file: " + f)
-        zip = zipfile.ZipFile(os.path.join(pk3Dir, f))
+    for pk3file in pk3files:
+        print("file: " + pk3file)
+        zip = zipfile.ZipFile(os.path.join(pk3Dir, pk3file))
 
-        descriptors = [name for name in zip.namelist() if name.endswith('.txt')]
 
-        map = {}
-        map['name'] = f.replace(".pk3", "").replace("map-", "")
-        map['description'] = ''
-        custom_maps.append(map)
+        for item in zip.namelist():
+            if item.endswith('.bsp'):
+                map_name = os.path.basename(item).replace(".bsp", "")
+            
+                descriptors = [name for name in zip.namelist() if name.endswith(map_name + '.txt')]
 
-        if len(descriptors) >= 1:
+                map = {}
+                map['name'] = map_name
+                map['description'] = ''
+                custom_maps.append(map)
 
-            for descriptor in descriptors:
+                if len(descriptors) >= 1:
 
-                data = zip.open(descriptor).readlines()
+                    for descriptor in descriptors:
 
-                for line in data:
-                    ll = line.decode("cp1252").strip()
-                    if re.match(r'\s*title\s*:.+', ll.lower()):
-                        map['title'] = splitValue(ll)
+                        data = zip.open(descriptor).readlines()
 
-                    if re.match(r'\s*author\s*:.+', ll.lower()):
-                        map['source'] = splitValue(ll)
+                        for line in data:
+                            ll = line.decode("cp1252").strip()
+                            if re.match(r'\s*title\s*:.+', ll.lower()):
+                                map['title'] = splitValue(ll)
 
-                if 'title' in map:
-                    break
+                            if re.match(r'\s*author\s*:.+', ll.lower()):
+                                map['source'] = splitValue(ll)
 
-        level_shots_jpg = [name for name in zip.namelist() if name.startswith('levelshots/') and name.endswith('.jpg')]
-        level_shots_tga = [name for name in zip.namelist() if name.startswith('levelshots/') and name.endswith('.tga')]
+                            if re.match(r'\s*description\s*:.+', ll.lower()):
+                                map['description'] = splitValue(ll)
 
-        if len(level_shots_jpg) > 0:
-            source = zip.open(level_shots_jpg[0])
-            target = open(os.path.join(imageDir, map['name'] + ".jpg"), "wb")
-            with source, target:
-                shutil.copyfileobj(source, target)
-        elif len(level_shots_tga) > 0:
-            print("converting tga: " + level_shots_tga[0])
-            source = zip.open(level_shots_tga[0])
-            im = Image.open(source)
-            im.save(os.path.join(imageDir, map['name'] + ".jpg"))
+                        if 'title' in map:
+                            break
+
+                level_shots_jpg = [name for name in zip.namelist() if name.startswith('levelshots/') and name.endswith(map_name + '.jpg')]
+                level_shots_tga = [name for name in zip.namelist() if name.startswith('levelshots/') and name.endswith(map_name + '.tga')]
+
+                if len(level_shots_jpg) > 0:
+                    source = zip.open(level_shots_jpg[0])
+                    target = open(os.path.join(imageDir, map['name'] + ".jpg"), "wb")
+                    with source, target:
+                        shutil.copyfileobj(source, target)
+                elif len(level_shots_tga) > 0:
+                    print("converting tga: " + level_shots_tga[0])
+                    source = zip.open(level_shots_tga[0])
+                    im = Image.open(source)
+                    im.save(os.path.join(imageDir, map['name'] + ".jpg"))
 
     with open('original_maps.json', 'r') as f:
         maps = json.load(f)
