@@ -30,6 +30,10 @@ services:
     ports:
      - 8080:8080
 
+  mattermost-webhook:
+    build: ./mattermost-webhook/
+    restart: always
+
   map-download:
     restart: always
     build: ./map-download
