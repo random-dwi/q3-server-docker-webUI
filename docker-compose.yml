@@ -33,6 +33,9 @@ services:
   mattermost-webhook:
     build: ./mattermost-webhook/
     restart: always
+    environment:
+      - REST_API_HOST:ng-quake3-be
+      - REST_API_PORT:9009
 
   map-download:
     restart: always

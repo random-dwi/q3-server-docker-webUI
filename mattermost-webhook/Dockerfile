@@ -12,4 +12,7 @@ RUN apk --no-cache add git && \
 
 WORKDIR /var/q3-server-docker-mattermost-webhook/
 
+ENV REST_API_HOST ng-quake3-be
+ENV REST_API_PORT 9009
+
 CMD ["npm", "start"]
